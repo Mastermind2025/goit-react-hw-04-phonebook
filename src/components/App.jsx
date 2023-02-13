@@ -1,16 +1,78 @@
+import { useState, useEffect } from 'react';
+import Notiflix from 'notiflix';
+import ContactCreate from './ContactCreate';
+import ContactList from './ContactList';
+import Section from './Section';
+import Filter from './ContactList/Filter';
+import Header from './Header';
+
+import contactsJson from './contacts.json';
+
+// import PropTypes from 'prop-types';
+
 export const App = () => {
+  // const [contacts, setContacts] = useState(contactsJson);
+  const [contacts, setContacts] = useState(() => {
+    return JSON.parse(localStorage.getItem('contacts')) ?? [contactsJson];
+  });
+  const [filter, setFilter] = useState('');
+  
+  // useEffect(() => {
+  //   const parsedContacts = JSON.parse(localStorage.getItem('contacts'));
+  //   if (parsedContacts) {
+  //     setContacts(parsedContacts);
+  //   }
+  // }, []);
+  
+  useEffect(() => {
+    localStorage.setItem('contacts', JSON.stringify(contacts));
+  }, [contacts]); 
+
+  
+  const addContact = newContact => {
+    // console.log(newContact);
+    checkContact(newContact)
+        ? Notiflix.Notify.warning(`${newContact.name} is already in your phonebook `)
+        : setContacts([newContact, ...contacts]);
+  };
+
+  const checkContact = newContact => {
+    return contacts.some(({ name }) => 
+      name.toLowerCase() === newContact.name.toLowerCase()
+    );
+  }  
+      
+
+  const deleteContact = contactId => {
+    setContacts(contacts.filter(contact => contact.id !== contactId),
+    ); 
+  }
+
+  const changeFilter = evt => {
+    setFilter(evt.currentTarget.value);
+  }
+
+  const getFilteredContacts = () => {
+    const normalizedFilter = filter.toLowerCase();
+
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter),
+    )
+  }
+      
+  const filteredContacts = getFilteredContacts();
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
+    <>
+      <Header title="Phonebook"/>
+      <ContactCreate onSubmit={addContact} />
+      <Section title="Contacts">
+        <Filter value={filter} onChange={changeFilter} />
+            
+        <ContactList
+          contacts={filteredContacts}
+          onDeleteContact={deleteContact}
+        />
+      </Section>
+    </>
   );
 };
