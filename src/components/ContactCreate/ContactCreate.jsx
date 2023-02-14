@@ -20,7 +20,7 @@ const schemaContact = yup.object().shape({
 export default function ContactCreate ({onSubmit}) {
         
     const handleSubmit = (values, {resetForm}) => {
-        // console.log(values);
+       
         const formContactData = values;
         onSubmit({id: nanoid(), ...formContactData});
         

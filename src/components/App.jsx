@@ -8,21 +8,12 @@ import Header from './Header';
 
 import contactsJson from './contacts.json';
 
-// import PropTypes from 'prop-types';
-
 export const App = () => {
-  // const [contacts, setContacts] = useState(contactsJson);
+  
   const [contacts, setContacts] = useState(() => {
     return JSON.parse(localStorage.getItem('contacts')) ?? [contactsJson];
   });
   const [filter, setFilter] = useState('');
-  
-  // useEffect(() => {
-  //   const parsedContacts = JSON.parse(localStorage.getItem('contacts'));
-  //   if (parsedContacts) {
-  //     setContacts(parsedContacts);
-  //   }
-  // }, []);
   
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
@@ -30,7 +21,7 @@ export const App = () => {
 
   
   const addContact = newContact => {
-    // console.log(newContact);
+    
     checkContact(newContact)
         ? Notiflix.Notify.warning(`${newContact.name} is already in your phonebook `)
         : setContacts([newContact, ...contacts]);
